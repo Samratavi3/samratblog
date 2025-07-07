@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "vercel-build": "next build",
+    "vercel-dev": "next dev",
+    "analyze": "cross-env ANALYZE=true next build",
+    "export": "next export"
+  }
+}

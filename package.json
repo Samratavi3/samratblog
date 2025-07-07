@@ -1,0 +1,42 @@
+{
+  "name": "samblog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A full-stack blog application built with Next.js, featuring a powerful admin panel, responsive design, and rich content management capabilities.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samratavi94/samblog.git"
+  },
+  "author": "Samrat Avi <samratavi94@gmail.com>",
+  "keywords": [
+    "nextjs",
+    "blog",
+    "react",
+    "mongodb",
+    "tailwindcss",
+    "admin-panel"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "mongoose": "^8.5.1",
+    "next": "^14.2.30",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-toastify": "^10.0.5",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
+  }
+}

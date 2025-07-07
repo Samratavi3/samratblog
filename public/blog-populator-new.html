@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Populator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        background: #000;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 10px 5px;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        background: #333;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      #testBtn {
+        background: #0066cc;
+      }
+      #testBtn:hover {
+        background: #0052a3;
+      }
+      .progress {
+        margin: 20px 0;
+        padding: 15px;
+        background: #f0f0f0;
+        border-radius: 8px;
+        font-family: monospace;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .info {
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Blog Database Populator</h1>
+      <p>
+        This tool will populate your database with 100 sample blogs across all
+        categories:
+      </p>
+      <ul>
+        <li><strong>Technology:</strong> 34 blogs</li>
+        <li><strong>Startup:</strong> 33 blogs</li>
+        <li><strong>Lifestyle:</strong> 33 blogs</li>
+      </ul>
+
+      <button id="populateBtn" onclick="populateBlogs()">
+        Populate Database with 100 Blogs
+      </button>
+
+      <button id="clearBtn" onclick="clearBlogs()">Clear All Blogs</button>
+
+      <button id="testBtn" onclick="testImageAccess()">
+        Test Image Access
+      </button>
+
+      <div id="progress" class="progress"></div>
+    </div>
+
+    <script src="blogData.js"></script>
+    <script>
+      function log(message, type = "info") {
+        const progress = document.getElementById("progress");
+        const timestamp = new Date().toLocaleTimeString();
+        const color =
+          type === "success" ? "green" : type === "error" ? "red" : "blue";
+        progress.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+        progress.scrollTop = progress.scrollHeight;
+      }
+
+      async function testImageAccess() {
+        log("Testing image accessibility...", "info");
+
+        const imageFiles = [
+          "blog_pic_1.png",
+          "blog_pic_2.png",
+          "blog_pic_3.png",
+          "blog_pic_4.png",
+          "blog_pic_5.png",
+          "blog_pic_6.png",
+          "blog_pic_7.png",
+          "blog_pic_8.png",
+          "blog_pic_9.png",
+          "blog_pic_10.png",
+          "blog_pic_11.png",
+          "blog_pic_12.png",
+          "blog_pic_13.png",
+          "blog_pic_14.png",
+          "blog_pic_15.png",
+          "blog_pic_16.png",
+        ];
+
+        let accessible = 0;
+        let inaccessible = 0;
+
+        for (const imageName of imageFiles) {
+          try {
+            const response = await fetch(`/${imageName}`);
+            if (response.ok) {
+              accessible++;
+              log(`✅ ${imageName} - accessible`, "success");
+            } else {
+              inaccessible++;
+              log(
+                `❌ ${imageName} - not accessible (${response.status})`,
+                "error"
+              );
+            }
+          } catch (error) {
+            inaccessible++;
+            log(`❌ ${imageName} - error: ${error.message}`, "error");
+          }
+        }
+
+        log(`\\n📊 Test Results:`, "info");
+        log(`✅ Accessible images: ${accessible}`, "success");
+        log(`❌ Inaccessible images: ${inaccessible}`, "error");
+
+        return { accessible, inaccessible, total: imageFiles.length };
+      }
+
+      async function populateBlogs() {
+        const populateBtn = document.getElementById("populateBtn");
+        const clearBtn = document.getElementById("clearBtn");
+
+        populateBtn.disabled = true;
+        clearBtn.disabled = true;
+
+        try {
+          log("Starting blog population process...", "info");
+
+          // Test image accessibility first
+          const imageTest = await testImageAccess();
+          if (imageTest.accessible === 0) {
+            log(
+              "❌ No images are accessible. Check if images exist in public folder.",
+              "error"
+            );
+            return;
+          }
+
+          let successCount = 0;
+          let errorCount = 0;
+
+          for (let i = 0; i < window.blogData.length; i++) {
+            const blog = window.blogData[i];
+
+            try {
+              log(`Adding blog ${i + 1}/100: ${blog.title}`, "info");
+
+              // Use cycling image assignment with clean image names
+              let imageName = blog.image;
+              if (imageName.startsWith("/")) {
+                imageName = imageName.substring(1); // Remove leading slash
+              }
+
+              // If image has timestamp or is corrupted, use cycling assignment
+              if (
+                !imageName ||
+                imageName.includes("1751866") ||
+                imageName.includes("1722") ||
+                !imageName.includes("blog_pic_")
+              ) {
+                const imageNumber = (i % 16) + 1;
+                imageName = `blog_pic_${imageNumber}.png`;
+              }
+
+              // Fetch the actual image file from the public folder
+              let imageFile;
+              try {
+                const imageResponse = await fetch(`/${imageName}`);
+                if (imageResponse.ok) {
+                  const imageBlob = await imageResponse.blob();
+                  imageFile = new File([imageBlob], imageName, {
+                    type: imageBlob.type || "image/png",
+                  });
+                } else {
+                  throw new Error(`Failed to fetch image: ${imageName}`);
+                }
+              } catch (imageError) {
+                log(
+                  `Warning: Could not load image ${imageName}, using placeholder`,
+                  "error"
+                );
+                // Create a placeholder image
+                const canvas = document.createElement("canvas");
+                canvas.width = 400;
+                canvas.height = 400;
+                const ctx = canvas.getContext("2d");
+
+                // Create a gradient background
+                const gradient = ctx.createLinearGradient(0, 0, 400, 400);
+                gradient.addColorStop(0, "#f0f0f0");
+                gradient.addColorStop(1, "#e0e0e0");
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 400, 400);
+
+                // Add text
+                ctx.fillStyle = "#888";
+                ctx.font = "24px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("Blog Image", 200, 180);
+                ctx.font = "16px Arial";
+                ctx.fillText(`#${i + 1}`, 200, 220);
+
+                imageFile = await new Promise((resolve) => {
+                  canvas.toBlob((blob) => {
+                    resolve(
+                      new File([blob], `placeholder_${i + 1}.png`, {
+                        type: "image/png",
+                      })
+                    );
+                  });
+                });
+              }
+
+              const formData = new FormData();
+              formData.append("title", blog.title);
+              formData.append("description", blog.description);
+              formData.append("category", blog.category);
+              formData.append("author", blog.author);
+              if (imageFile) {
+                formData.append("image", imageFile);
+              }
+
+              const response = await fetch("/api/blog", {
+                method: "POST",
+                headers: {
+                  "x-admin-auth": "authenticated",
+                },
+                body: formData,
+              });
+
+              const result = await response.json();
+
+              if (result.success) {
+                successCount++;
+                if ((i + 1) % 10 === 0) {
+                  log(
+                    `Progress: ${i + 1}/100 blogs added successfully`,
+                    "success"
+                  );
+                }
+              } else {
+                throw new Error(result.error || "Unknown error");
+              }
+
+              // Small delay to avoid overwhelming the server
+              await new Promise((resolve) => setTimeout(resolve, 100));
+            } catch (error) {
+              errorCount++;
+              log(
+                `Error adding blog "${blog.title}": ${error.message}`,
+                "error"
+              );
+            }
+          }
+
+          log(`\\n✅ Blog population completed!`, "success");
+          log(`✅ Successfully added: ${successCount} blogs`, "success");
+          if (errorCount > 0) {
+            log(`❌ Failed to add: ${errorCount} blogs`, "error");
+          }
+          log(`\\n📊 Distribution:`, "info");
+          log(
+            `• Technology: ${
+              window.blogData.filter((b) => b.category === "Technology").length
+            } blogs`,
+            "info"
+          );
+          log(
+            `• Startup: ${
+              window.blogData.filter((b) => b.category === "Startup").length
+            } blogs`,
+            "info"
+          );
+          log(
+            `• Lifestyle: ${
+              window.blogData.filter((b) => b.category === "Lifestyle").length
+            } blogs`,
+            "info"
+          );
+        } catch (error) {
+          log(`❌ Population failed: ${error.message}`, "error");
+        } finally {
+          populateBtn.disabled = false;
+          clearBtn.disabled = false;
+        }
+      }
+
+      async function clearBlogs() {
+        if (
+          !confirm(
+            "Are you sure you want to delete all blogs? This action cannot be undone."
+          )
+        ) {
+          return;
+        }
+
+        const populateBtn = document.getElementById("populateBtn");
+        const clearBtn = document.getElementById("clearBtn");
+
+        populateBtn.disabled = true;
+        clearBtn.disabled = true;
+
+        try {
+          log("Starting blog clearing process...", "info");
+
+          const response = await fetch("/api/blog?action=clear", {
+            method: "PATCH",
+            headers: {
+              "x-admin-auth": "authenticated",
+            },
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            log(`✅ ${result.msg}`, "success");
+          } else {
+            log(`❌ Clear failed: ${result.error}`, "error");
+          }
+        } catch (error) {
+          log(`❌ Clear failed: ${error.message}`, "error");
+        } finally {
+          populateBtn.disabled = false;
+          clearBtn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>
