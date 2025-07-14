@@ -8,7 +8,7 @@ const nextConfig = {
 
   // Image optimization settings
   images: {
-    domains: [],
+    domains: ["res.cloudinary.com"],
     formats: ["image/webp", "image/avif"],
     minimumCacheTTL: 60,
   },

@@ -1,7 +1,11 @@
 import { connectDB } from "@/lib/config/db";
 import blogModel from "@/lib/models/blogModel";
-import { writeFile } from "fs/promises";
-import fs from "fs";
+// ...existing code...
+import cloudinary from "@/lib/config/cloudinary";
+import multer from "multer";
+import { Readable } from "stream";
+import { promisify } from "util";
+// ...existing code...
 import { NextResponse } from "next/server";
 import path from "path";
 
@@ -85,7 +89,15 @@ export async function GET(request) {
     );
   }
 }
-// api endpoint for uploading blogs
+// Helper to convert a web stream to a buffer
+async function streamToBuffer(readableStream) {
+  const chunks = [];
+  for await (const chunk of readableStream) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
 export async function POST(request) {
   // Check admin authentication for POST requests
   const adminAuth = request.headers.get("x-admin-auth");
@@ -98,7 +110,6 @@ export async function POST(request) {
 
   try {
     const formData = await request.formData();
-
     // Extract and validate data
     const blogData = {
       title: formData.get("title")?.toString().trim(),
@@ -106,7 +117,6 @@ export async function POST(request) {
       category: formData.get("category")?.toString().trim(),
       author: formData.get("author")?.toString().trim(),
     };
-
     const image = formData.get("image");
 
     // Validate blog data
@@ -126,39 +136,25 @@ export async function POST(request) {
       );
     }
 
-    const imageValidationError = validateImageFile(image);
-    if (imageValidationError) {
-      return NextResponse.json(
-        { success: false, error: imageValidationError },
-        { status: 400 }
+    // Convert image to buffer
+    const imageBuffer = Buffer.from(await image.arrayBuffer());
+
+    // Upload to Cloudinary
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "samblog" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
       );
-    }
+      Readable.from(imageBuffer).pipe(uploadStream);
+    });
 
-    // Process image upload
-    let imgUrl;
-
-    // Check if the image already exists in the public folder (for blog populator)
-    if (image.name && fs.existsSync(`./public/${image.name}`)) {
-      // Use existing image
-      imgUrl = `/${image.name}`;
-    } else {
-      // Upload new image with timestamp
-      const timestamp = Date.now();
-      const fileExtension = path.extname(image.name);
-      const sanitizedFileName = `${timestamp}_blog${fileExtension}`;
-      const imagePath = `./public/${sanitizedFileName}`;
-
-      const imageByteData = await image.arrayBuffer();
-      const buffer = Buffer.from(imageByteData);
-      await writeFile(imagePath, buffer);
-
-      imgUrl = `/${sanitizedFileName}`;
-    }
-
-    // Create blog with validated data
+    // Create blog with Cloudinary image URL
     const newBlog = await blogModel.create({
       ...blogData,
-      image: imgUrl,
+      image: uploadResult.secure_url,
     });
 
     return NextResponse.json({

@@ -108,7 +108,9 @@ const BlogDetailPage = ({ params }) => {
             {data.title}
           </h1>
           <Image
-            src={"/authorImg.png"}
+            src={
+              "https://res.cloudinary.com/ducp0i8kz/image/upload/v1752470670/samblog/hjrgeqqylb21l1wsqqylv.png"
+            }
             width={60}
             height={60}
             alt=""
