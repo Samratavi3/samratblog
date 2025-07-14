@@ -1,11 +1,18 @@
 "use client";
 import { assets } from "@/assets/assets";
-import Sidebar from "@/components/AdminComponents/Sidebar";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
-import ProtectedAdminRoute from "@/components/AdminComponents/ProtectedAdminRoute";
+
+const Sidebar = dynamic(() => import("@/components/AdminComponents/Sidebar"), {
+  ssr: false,
+});
+const ProtectedAdminRoute = dynamic(
+  () => import("@/components/AdminComponents/ProtectedAdminRoute"),
+  { ssr: false }
+);
 
 export default function Layout({ children }) {
   return (
