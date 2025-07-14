@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/config/db";
 import emailModel from "@/lib/models/emailModel";
 import { NextResponse } from "next/server";
+import { sendMail } from "@/lib/config/nodemailer";
 
 const loadDB = async () => {
   await connectDB();
@@ -61,6 +62,17 @@ export async function POST(request) {
 
     // Create new subscription
     const newSubscription = await emailModel.create({ email });
+
+    // Send acknowledgment email
+    try {
+      await sendMail({
+        to: email,
+        subject: "Thank you for subscribing!",
+        html: `<h2>Welcome to Samrat Blog!</h2><p>Thank you for subscribing to our newsletter. You'll receive updates when new blogs are published.</p>`,
+      });
+    } catch (err) {
+      console.error("Failed to send acknowledgment email:", err.message);
+    }
 
     return NextResponse.json({
       success: true,

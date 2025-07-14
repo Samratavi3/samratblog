@@ -44,6 +44,7 @@ const AdminLogin = () => {
               src={assets.logo}
               alt="Blog Logo"
               width={180}
+              height={40}
               className="w-32 sm:w-40"
             />
           </div>
