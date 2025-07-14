@@ -8,7 +8,14 @@ const nextConfig = {
 
   // Image optimization settings
   images: {
-    domains: ["res.cloudinary.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
     formats: ["image/webp", "image/avif"],
     minimumCacheTTL: 60,
   },
