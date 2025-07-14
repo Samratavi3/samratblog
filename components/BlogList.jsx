@@ -81,47 +81,63 @@ const BlogList = () => {
 
   return (
     <div className="">
-      <div className="flex justify-center gap-6 my-10 ">
-        <button
-          onClick={() => setMenu("All")}
-          className={
-            menu === "All"
-              ? "bg-black text-white py-1 px-4 rounded-sm"
-              : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"
-          }
-        >
-          All
-        </button>
-        <button
-          className={
-            menu === "Technology"
-              ? "bg-black text-white py-1 px-4 rounded-sm"
-              : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"
-          }
-          onClick={() => setMenu("Technology")}
-        >
-          Technology
-        </button>
-        <button
-          className={
-            menu === "Startup"
-              ? "bg-black text-white py-1 px-4 rounded-sm"
-              : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"
-          }
-          onClick={() => setMenu("Startup")}
-        >
-          Startup
-        </button>
-        <button
-          className={
-            menu === "Lifestyle"
-              ? "bg-black text-white py-1 px-4 rounded-sm"
-              : "hover:bg-gray-100 py-1 px-4 rounded-sm transition-colors"
-          }
-          onClick={() => setMenu("Lifestyle")}
-        >
-          Lifestyle
-        </button>
+      <div className="my-4 sm:my-10 px-2 sm:px-0 sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-200 py-2 sm:static sm:bg-transparent sm:border-0 sm:py-0">
+        {/* Mobile: Select dropdown */}
+        <div className="block sm:hidden w-full max-w-xs mx-auto">
+          <select
+            value={menu}
+            onChange={(e) => setMenu(e.target.value)}
+            className="w-full py-2 px-3 border border-black rounded-full text-base focus:outline-none focus:ring-2 focus:ring-black"
+          >
+            <option value="All">All</option>
+            <option value="Technology">Technology</option>
+            <option value="Startup">Startup</option>
+            <option value="Lifestyle">Lifestyle</option>
+          </select>
+        </div>
+        {/* Desktop: Button group */}
+        <div className="hidden sm:flex flex-nowrap justify-center gap-6">
+          <button
+            onClick={() => setMenu("All")}
+            className={
+              menu === "All"
+                ? "bg-black text-white py-1 px-4 rounded-full min-w-[90px]"
+                : "hover:bg-gray-100 py-1 px-4 rounded-full min-w-[90px] transition-colors"
+            }
+          >
+            All
+          </button>
+          <button
+            className={
+              menu === "Technology"
+                ? "bg-black text-white py-1 px-4 rounded-full min-w-[90px]"
+                : "hover:bg-gray-100 py-1 px-4 rounded-full min-w-[90px] transition-colors"
+            }
+            onClick={() => setMenu("Technology")}
+          >
+            Technology
+          </button>
+          <button
+            className={
+              menu === "Startup"
+                ? "bg-black text-white py-1 px-4 rounded-full min-w-[90px]"
+                : "hover:bg-gray-100 py-1 px-4 rounded-full min-w-[90px] transition-colors"
+            }
+            onClick={() => setMenu("Startup")}
+          >
+            Startup
+          </button>
+          <button
+            className={
+              menu === "Lifestyle"
+                ? "bg-black text-white py-1 px-4 rounded-full min-w-[90px]"
+                : "hover:bg-gray-100 py-1 px-4 rounded-full min-w-[90px] transition-colors"
+            }
+            onClick={() => setMenu("Lifestyle")}
+          >
+            Lifestyle
+          </button>
+        </div>
       </div>
 
       {/* Refresh Button */}
@@ -157,7 +173,7 @@ const BlogList = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-8 mb-12 max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 gap-y-8 mb-12 max-w-7xl mx-auto px-2 sm:px-6">
           {filteredBlogs.map((item, index) => (
             <BlogItem
               image={item.image}

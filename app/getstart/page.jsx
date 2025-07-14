@@ -19,6 +19,7 @@ const page = () => {
             <Image
               src={assets.logo}
               width={180}
+              height={40}
               className="w-[130px] sm:w-auto"
               alt="Blog Logo"
             />
@@ -27,7 +28,8 @@ const page = () => {
             href="/"
             className="flex items-center gap-2 font-medium px-3 py-1  sm:px-6 sm:py-3 border border-solid border-black shadow-[-7px_7px_0px_#000000] hover:bg-gray-100 transition-colors"
           >
-            Back to Home <Image src={assets.arrow} alt="Arrow icon" />
+            Back to Home{" "}
+            <Image src={assets.arrow} alt="Arrow icon" width={10} height={10} />
           </Link>
         </div>
       </div>

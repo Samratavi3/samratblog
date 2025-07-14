@@ -13,7 +13,7 @@ const AddBlog = () => {
     title: "",
     author: "",
     description: "",
-    category: "",
+    category: "Technology", // Default to a valid category
   });
 
   const onChangeHandler = (e) => {
@@ -58,7 +58,7 @@ const AddBlog = () => {
           title: "",
           author: "",
           description: "",
-          category: "",
+          category: "Technology", // Reset to default valid category
         });
 
         // Show success message and redirect after 2 seconds
@@ -74,8 +74,18 @@ const AddBlog = () => {
       }
     } catch (error) {
       console.error("Error creating blog:", error);
-      if (error.response?.status === 401) {
-        toast.error("Unauthorized access");
+      if (error.response) {
+        console.error("API response:", error.response.data);
+        // Show backend validation errors if present
+        if (error.response.data?.errors) {
+          toast.error(error.response.data.errors.join(" | "));
+        } else if (error.response.data?.error) {
+          toast.error(error.response.data.error);
+        } else if (error.response.status === 401) {
+          toast.error("Unauthorized access");
+        } else {
+          toast.error("Failed to create blog. Please try again.");
+        }
       } else {
         toast.error("Failed to create blog. Please try again.");
       }
@@ -140,8 +150,8 @@ const AddBlog = () => {
         name="category"
         onChange={onChangeHandler}
         value={data.category}
+        required
       >
-        <option value=""></option>
         <option value="Startup">Startup</option>
         <option value="Technology">Technology</option>
         <option value="Lifestyle">Lifestyle</option>

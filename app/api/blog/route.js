@@ -7,6 +7,8 @@ import { Readable } from "stream";
 import { promisify } from "util";
 // ...existing code...
 import { NextResponse } from "next/server";
+import { sendMail } from "@/lib/config/nodemailer";
+import emailModel from "@/lib/models/emailModel";
 import path from "path";
 
 const loadDB = async () => {
@@ -156,6 +158,25 @@ export async function POST(request) {
       ...blogData,
       image: uploadResult.secure_url,
     });
+
+    // Send email to all subscribers
+    try {
+      const subscribers = await emailModel.find({});
+      if (subscribers.length > 0) {
+        const to = subscribers.map((s) => s.email).join(",");
+        await sendMail({
+          to,
+          subject: `New Blog Published: ${newBlog.title}`,
+          html: `<h2>${newBlog.title}</h2><p>${
+            newBlog.description
+          }</p><a href="${
+            process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com"
+          }/blogs/${newBlog._id}">Read more</a>`,
+        });
+      }
+    } catch (err) {
+      console.error("Failed to send blog alert email:", err.message);
+    }
 
     return NextResponse.json({
       success: true,

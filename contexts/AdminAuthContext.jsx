@@ -24,9 +24,10 @@ export const AdminAuthProvider = ({ children }) => {
     setIsLoading(false);
   }, []);
 
+  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_SECRET_KEY || "Samrat22";
   const login = (password) => {
     // Check password (in production, this should be more secure)
-    if (password === "123456789") {
+    if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       localStorage.setItem("adminAuthenticated", "true");
       return true;

@@ -92,6 +92,7 @@ const BlogDetailPage = ({ params }) => {
             <Image
               src={assets.logo}
               width={180}
+              height={40}
               alt=""
               className="w-[130px] sm:w-auto"
             />
@@ -166,9 +167,9 @@ const BlogDetailPage = ({ params }) => {
         <div className="my-24 ">
           <p className="text-black font-semibold my-4 ">Share This Artical</p>
           <div className="flex">
-            <Image src={assets.facebook_icon} width={50} alt="" />
-            <Image src={assets.twitter_icon} width={50} alt="" />
-            <Image src={assets.googleplus_icon} width={50} alt="" />
+            <Image src={assets.facebook_icon} width={50} height={50} alt="" />
+            <Image src={assets.twitter_icon} width={50} height={50} alt="" />
+            <Image src={assets.googleplus_icon} width={50} height={50} alt="" />
           </div>
         </div>
       </div>
