@@ -17,9 +17,10 @@
     "admin-panel"
   ],
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
+    "start:windows": "set NODE_ENV=production && node server.js",
     "lint": "next lint",
     "lint:fix": "next lint --fix"
   },
@@ -31,6 +32,7 @@
     "multer": "^2.0.1",
     "multer-storage-cloudinary": "^4.0.0",
     "next": "^14.2.30",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
     "react": "^18",
     "react-dom": "^18",
