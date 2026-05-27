@@ -27,22 +27,15 @@ async function initializeDB() {
     await connectDB();
     console.log("✅ Initial database connection established");
 
-    // Setup cron job to ping database every 24 hours
-    // Runs at 3:00 AM every day
-    cron.schedule("0 3 * * *", async () => {
-      console.log("🕐 Running scheduled database ping...");
+    // Ping database every 5 minutes to keep the connection alive
+    // and prevent MongoDB Atlas / hosting platform from going to sleep
+    cron.schedule("*/5 * * * *", async () => {
+      console.log("🕐 Running 5-minute database keep-alive ping...");
       await pingDB();
     });
 
-    // Additional ping every 12 hours for extra safety
-    cron.schedule("0 */12 * * *", async () => {
-      console.log("🕐 Running 12-hour database ping...");
-      await pingDB();
-    });
-
-    console.log("✅ Database ping cron jobs scheduled");
-    console.log("   - Daily ping: 3:00 AM");
-    console.log("   - 12-hour ping: Every 12 hours");
+    console.log("✅ Database ping cron job scheduled");
+    console.log("   - Keep-alive ping: Every 5 minutes");
   } catch (error) {
     console.error("❌ Failed to initialize database:", error);
     // Don't crash the server, just log the error
