@@ -55,11 +55,7 @@ const AddBlogPage = () => {
       formData.append("category", data.category);
       formData.append("image", image);
 
-      const response = await axios.post("/api/blog", formData, {
-        headers: {
-          "x-admin-auth": "authenticated",
-        },
-      });
+      const response = await axios.post("/api/blog", formData);
 
       if (response.data.success) {
         toast.success(response.data.msg);

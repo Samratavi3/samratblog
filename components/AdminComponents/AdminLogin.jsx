@@ -20,19 +20,16 @@ const AdminLogin = () => {
 
     setIsSubmitting(true);
 
-    // Simulate a small delay for better UX
-    setTimeout(() => {
-      const success = login(password);
+    const success = await login(password);
 
-      if (success) {
-        toast.success("Login successful!");
-        setPassword("");
-      } else {
-        toast.error("Invalid password");
-      }
+    if (success) {
+      toast.success("Login successful!");
+      setPassword("");
+    } else {
+      toast.error("Invalid password");
+    }
 
-      setIsSubmitting(false);
-    }, 500);
+    setIsSubmitting(false);
   };
 
   return (

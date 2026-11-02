@@ -44,11 +44,7 @@ const AddBlog = () => {
     formData.append("image", image);
 
     try {
-      const response = await axios.post("/api/blog", formData, {
-        headers: {
-          "x-admin-auth": "authenticated",
-        },
-      });
+      const response = await axios.post("/api/blog", formData);
 
       if (response.data.success) {
         toast.success(response.data.msg || "Blog created successfully!");

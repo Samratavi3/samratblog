@@ -30,9 +30,6 @@ const BlogListPage = () => {
         params: {
           id: mongoId,
         },
-        headers: {
-          "x-admin-auth": "authenticated",
-        },
       });
       if (response.data.success) {
         toast.success(response.data.msg);

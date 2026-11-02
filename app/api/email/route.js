@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/config/db";
 import emailModel from "@/lib/models/emailModel";
 import { NextResponse } from "next/server";
+import { isAdminRequest, unauthorized } from "@/lib/middleware/adminAuth";
 import { sendMail } from "@/lib/config/nodemailer";
 
 const loadDB = async () => {
@@ -15,7 +16,10 @@ const validateEmail = (email) => {
 
 loadDB();
 
+// Subscriber addresses are personal data: admin-only.
 export async function GET(request) {
+  if (!isAdminRequest(request)) return unauthorized();
+
   try {
     const subscriptions = await emailModel.find({}).sort({ date: -1 });
     return NextResponse.json({
@@ -89,14 +93,7 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-  // Check admin authentication for DELETE requests
-  const adminAuth = request.headers.get("x-admin-auth");
-  if (adminAuth !== "authenticated") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized access" },
-      { status: 401 }
-    );
-  }
+  if (!isAdminRequest(request)) return unauthorized();
 
   try {
     const id = request.nextUrl.searchParams.get("id");

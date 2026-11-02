@@ -7,6 +7,7 @@ import { Readable } from "stream";
 import { promisify } from "util";
 // ...existing code...
 import { NextResponse } from "next/server";
+import { isAdminRequest, unauthorized } from "@/lib/middleware/adminAuth";
 import { sendMail } from "@/lib/config/nodemailer";
 import emailModel from "@/lib/models/emailModel";
 import path from "path";
@@ -100,16 +101,8 @@ async function streamToBuffer(readableStream) {
   return Buffer.concat(chunks);
 }
 
+// Open to everyone: the public "Start Your Blogging Journey" page posts here.
 export async function POST(request) {
-  // Check admin authentication for POST requests
-  const adminAuth = request.headers.get("x-admin-auth");
-  if (adminAuth !== "authenticated") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized access" },
-      { status: 401 }
-    );
-  }
-
   try {
     const formData = await request.formData();
     // Extract and validate data
@@ -193,14 +186,7 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-  // Check admin authentication for DELETE requests
-  const adminAuth = request.headers.get("x-admin-auth");
-  if (adminAuth !== "authenticated") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized access" },
-      { status: 401 }
-    );
-  }
+  if (!isAdminRequest(request)) return unauthorized();
 
   try {
     const id = request.nextUrl.searchParams.get("id");
@@ -247,14 +233,8 @@ export async function DELETE(request) {
 }
 
 export async function PATCH(request) {
-  // Check admin authentication for PATCH requests (clear database)
-  const adminAuth = request.headers.get("x-admin-auth");
-  if (adminAuth !== "authenticated") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized access" },
-      { status: 401 }
-    );
-  }
+  // Clearing the database is admin-only.
+  if (!isAdminRequest(request)) return unauthorized();
 
   try {
     const action = request.nextUrl.searchParams.get("action");

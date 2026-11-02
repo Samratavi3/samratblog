@@ -9,8 +9,8 @@ import { toast } from "react-toastify";
 const Sidebar = () => {
   const { logout } = useAdminAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     toast.success("Logged out successfully");
   };
 
